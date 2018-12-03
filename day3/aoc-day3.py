@@ -1,4 +1,5 @@
 import collections
+import time
 
 
 def extract_coordinates(iterable) -> tuple:
@@ -42,14 +43,15 @@ def day3_part2(fn: str) -> int:
                         for claim in claims_on_square[(x1, y1)]:
                             labels[claim] = False
 
-        for key, value in labels.items():
-            if value:
-                return key
+        for claim, no_overlap in labels.items():
+            if no_overlap:
+                return claim
 
 
 if __name__ == "__main__":
     overlap_squares = day3_part1("day3-input.txt")
+    start = time.time()
     claim_without_overlap = day3_part2("day3-input.txt")
-
-    print(f"The number o squares with overlap: {overlap_squares}")
+    print(time.time()-start)
+    print(f"The number of squares with overlap: {overlap_squares}")
     print(f"Claim with no overlap: {claim_without_overlap}")
