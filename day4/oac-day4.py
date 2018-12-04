@@ -51,5 +51,5 @@ print(f"Answer: {part1.guard*part1.minute_sum.argmax()}")
 
 print("\nDay 4, part 2:")
 part2 = max(totals, key=lambda x: x.minute_sum.max())
-print(f"Guard #{part2.guard}, total: {part2.total}, minute: {part1.minute_sum.argmax()}")
-print(f"Answer: {part2.guard*part1.minute_sum.argmax()}")
+print(f"Guard #{part2.guard}, total: {part2.total}, minute: {part2.minute_sum.argmax()}")
+print(f"Answer: {part2.guard*part2.minute_sum.argmax()}")
