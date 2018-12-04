@@ -7,20 +7,17 @@ def get_shift(log):
     ilog = iter(log)
     guard = int(next(ilog).action[7:].strip().split(" ")[0])
     shift_log = np.zeros(60, dtype="int")
-    sleep = None
     for entry in ilog:
         if entry.action.startswith("Guard"):
             yield guard, shift_log
             shift_log = np.zeros(60)
             guard = int(entry.action[7:].strip().split(" ")[0])
             continue
-
         if entry.action == "falls asleep":
             sleep = entry.dt.minute
         else:
             wakes = entry.dt.minute
             shift_log[sleep:wakes] = 1
-            sleep = None
     yield guard, shift_log
 
 
