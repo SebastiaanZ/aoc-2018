@@ -1,6 +1,7 @@
 from string import ascii_lowercase as low
 from string import ascii_uppercase as upp
 from collections import deque
+from multiprocessing import Pool
 
 
 def get_reacting_couples():
@@ -25,15 +26,15 @@ def part_one(chemicals):
     return old_length
 
 
-def part_one2(chemicals):
+def part_one2(chemicals, return_data=False):
     d = deque()
     for chemical in chemicals:
-        if not d:
-            d.append(chemical)
-        elif d[-1] == chemical.swapcase():
+        if d and d[-1] == chemical.swapcase():
             d.pop()
         else:
             d.append(chemical)
+    if return_data:
+        return len(d), "".join(d)
     return len(d)
 
 
@@ -41,16 +42,24 @@ def part_two(c):
     return min(part_one(c.replace(a, "").replace(b, "")) for a, b in zip(low, upp))
 
 
-def part_two2(c):
-    return min(part_one2(c.replace(a, "").replace(b, "")) for a, b in zip(low, upp))
+def _part_two_mp(chemicals_letters):
+    chemicals, letters = chemicals_letters
+    return part_one2(chemicals.replace(letters[0], "").replace(letters[1], ""))
+
+
+def part_two_mp(chemicals):
+    chemicals_letters = [(chemicals, f"{a}{b}") for a, b in zip(low, upp)]
+
+    pool = Pool(processes=7)
+    return min(pool.map(_part_two_mp, chemicals_letters))
 
 
 if __name__ == "__main__":
     with open('day5-input.txt') as f:
         chemicals = f.read().strip()
 
-    answer1 = part_one2(chemicals)
+    answer1, chemicals2 = part_one2(chemicals, True)
     print(f"After the reaction, the length is: {answer1}")
 
-    answer2 = part_two2(chemicals)
+    answer2 = part_two_mp(chemicals2)
     print(f"Post-reaction length after removing offender: {answer2}")
