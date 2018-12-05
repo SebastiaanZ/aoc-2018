@@ -14,4 +14,4 @@ My personal solutions to the Advent of Code 2018 programming challenges. All puz
 
 
 ### Previous editions
-I've also started practicing with some of the puzzles from the previous editions. I'll add solutions to that to the ["previous_editions" folder](./master/previous_editions).
+I've also started practicing with some of the puzzles from the previous editions. I'll add solutions to that to the ["previous_editions" folder](../../tree/master/previous_editions/).
