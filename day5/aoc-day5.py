@@ -1,4 +1,5 @@
-from string import ascii_lowercase, ascii_uppercase
+from string import ascii_lowercase as low
+from string import ascii_uppercase as upp
 
 
 with open('day5-input.txt') as f:
@@ -7,7 +8,7 @@ with open('day5-input.txt') as f:
 
 def get_reacting_couples():
     couples = []
-    for l in ascii_lowercase:
+    for l in low:
         couples.append(l + l.upper())
         couples.append(l.upper() + l)
     return couples
@@ -28,10 +29,12 @@ def part_one(chemicals):
 
 
 def part_two(c):
-    low = ascii_lowercase
-    upp = ascii_uppercase
     return min(part_one(c.replace(a, "").replace(b, "")) for a, b in zip(low, upp))
 
 
-print(part_one(chemicals))
-print(part_two(chemicals))
+if __name__ == "__main__":
+    answer1 = part_one(chemicals)
+    print(f"After the reaction, the length is: {answer1}")
+
+    answer2 = part_two(chemicals)
+    print(f"Post-reaction length after removing offender: {answer2}")
