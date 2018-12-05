@@ -8,6 +8,7 @@ My personal solutions to the Advent of Code 2018 programming challenges. All puz
 - collections
 - string
 - datetime
+- multiprocessing
 
 ##### From SciPy
 - numpy
