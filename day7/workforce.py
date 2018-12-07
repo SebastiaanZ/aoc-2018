@@ -1,20 +1,37 @@
-class Workforce:
-
-    free_workers: set = set()
-    assigned_workers: list = list()
-    total_workers: int = 0
-    workers: dict = dict()
-
-    def __init__(self, ident: int) -> None:
-        self.id: int = ident
-        self.task: Task = None
-        self.free_workers.add(self.id)
-
-        self._start: int
-        self._finished: int
+class Manager:
+    def __init__(self, n_workers: int=1) -> None:
+        self.free_workers: set = set(range(n_workers))
+        self.workers: dict = {i: Worker(i) for i in range(n_workers)}
+        self.n_workers: int = n_workers
+        self.assigned_workers: list = list()
 
     @property
-    def finished(self):
+    def has_free_workers(self) -> bool:
+        return bool(self.free_workers)
+
+    def employ_free_worker(self, task, time) -> None:
+        worker_id = self.free_workers.pop()
+        worker = self.workers[worker_id]
+        worker.start_task(task, time)
+        self.assigned_workers.append(worker)
+
+    def finish_task(self) -> int:
+        self.assigned_workers.sort(reverse=True)
+        worker = self.assigned_workers.pop(-1)
+        self.free_workers.add(worker.id)
+        return worker.complete_task()
+
+
+class Worker:
+    def __init__(self, ident: int) -> None:
+        self.id: int = ident
+        self.task = None
+
+        self._start: int
+        self._finish: int
+
+    @property
+    def finished(self) -> int:
         return self._finished
 
     def __repr__(self) -> str:
@@ -29,92 +46,87 @@ class Workforce:
         self._finished = time + task.effort
 
     def complete_task(self) -> int:
-        self.free_workers.add(self.id)
         self.task.complete()
         self.task = None
         return self._finished
 
-    @classmethod
-    def recruite_workers(cls, workers) -> list:
-        cls.free_workers: set = set()
-        cls.assigned_workers: list = list()
-        cls.total_workers: int = 0
-        cls.workers: dict = dict()
-        cls.workers = {i: Workforce(i) for i in range(workers)}
-        cls.total_workers = workers
-        cls.free_workers = set(range(workers))
-        return list(cls.workers.values())
 
-    @classmethod
-    def get_free_worker(cls):
-        workerid = cls.free_workers.pop()
-        worker = cls.workers[workerid]
-        cls.assigned_workers.append(worker)
-        return worker
+class Tasklist:
+    def __init__(self,  idents: str, instructions: list, base_fee: int=0) -> None:
+        self.done: set = set()
+        self.done_order: list = list()
 
-    @classmethod
-    def finish_task(cls) -> int:
-        cls.assigned_workers.sort()
-        return cls.assigned_workers.pop(0).complete_task()
+        self.base_fee: int = base_fee
+        self.tasks = {ident: Task(ident, base_fee, self) for ident in idents}
+
+        self.to_do = list(self.tasks.values())
+
+        for instruction in instructions:
+            task_id = instruction[-13]
+            requirement = instruction[5]
+            self.tasks[task_id].add_requirement(requirement)
+
+    def __len__(self):
+        return len(self.to_do)
+
+    @property
+    def has_available_tasks(self) -> bool:
+        self.to_do.sort(reverse=True)
+        return not self.to_do[-1].requirements
+
+    @property
+    def available_task(self):
+        return self.to_do.pop()
 
 
 class Task:
-    done: set = set()
-    done_order: list = list()
-    base_fee: int
-
-    def __init__(self, ident: str) -> None:
+    def __init__(self, ident: str, base_fee: int, manager: Tasklist):
         self.id: str = ident
         self.ord = ord(ident) - 65
-        self.effort = ord(ident) - 64 + self.base_fee
+        self.effort: int = self.ord + base_fee + 1
         self._requirements: set = set()
+        self.manager = manager
 
     def __len__(self) -> int:
-        return len(self._requirements - self.done)
+        return len(self._requirements - self.manager.done)
 
     def __lt__(self, other) -> bool:
         return len(self) * 26 + self.ord < len(other) * 26 + other.ord
 
     def __repr__(self) -> str:
+        requiremens_left = self._requirements - self.manager.done
         return "%s(%r, requirements=%r)" % (self.__class__.__name__,
                                             self.id,
-                                            self._requirements - self.done)
+                                            requiremens_left)
 
     @property
     def requirements(self) -> set:
-        return self._requirements - self.done
+        return self._requirements - self.manager.done
 
     def add_requirement(self, requirement: str) -> None:
         self._requirements.add(requirement)
 
     def complete(self) -> None:
-        self.done.add(self.id)
-        self.done_order.append(self.id)
-
-    @classmethod
-    def create_tasklist(cls, idents: str, instructions: list, base_fee: int=0) -> dict:
-        cls.done: set = set()
-        cls.done_order: list = list()
-        cls.base_fee: int
-        cls.base_fee = base_fee
-        task_mapping = {ident: Task(ident) for ident in idents}
-        for instruction in instructions:
-            task_id = instruction[-13]
-            requirement = instruction[5]
-            task_mapping[task_id].add_requirement(requirement)
-        return list(task_mapping.values())
+        self.manager.done.add(self.id)
+        self.manager.done_order.append(self.id)
 
 
 if __name__ == "__main__":
-    from aoc_day7 import work
     from string import ascii_uppercase
+    from aoc_day7 import work
 
-    for i in range(5, 101):
-        answer2 = work("day7-input.txt",
-                       ascii_uppercase,
-                       n_workers=i,
-                       base_effort=60)[1]
+    answer1, time = work("day7-input.txt",
+                         ascii_uppercase,
+                         n_workers=1,
+                         base_effort=0)
 
-        assert(answer2 == 1115)
+    order, answer2 = work("day7-input.txt",
+                          ascii_uppercase,
+                          n_workers=5,
+                          base_effort=60)
 
-        print(f"Part II completion time with {i} workers: {answer2}")
+    assert(answer1 == "GRTAHKLQVYWXMUBCZPIJFEDNSO")
+    assert(answer2 == 1115)
+
+    print(f"Part I  task order: {answer1}    time: {time}")
+    print(f"Part II task order: {order}    time: {answer2}")
