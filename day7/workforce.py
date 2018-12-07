@@ -1,4 +1,4 @@
-class Workforce(object):
+class Workforce:
 
     free_workers: set = set()
     assigned_workers: list = list()
@@ -58,7 +58,7 @@ class Workforce(object):
         return cls.assigned_workers.pop(0).complete_task()
 
 
-class Task(object):
+class Task:
     done: set = set()
     done_order: list = list()
     base_fee: int
