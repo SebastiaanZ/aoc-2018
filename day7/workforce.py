@@ -106,38 +106,15 @@ class Task(object):
 
 
 if __name__ == "__main__":
+    from aoc_day7 import work
     from string import ascii_uppercase
 
-    with open("day7-input.txt") as f:
-        instructions = f.readlines()
-        to_do = Task.create_tasklist(ascii_uppercase, instructions, 60)
+    for i in range(5, 101):
+        answer2 = work("day7-input.txt",
+                       ascii_uppercase,
+                       n_workers=i,
+                       base_effort=60)[1]
 
-    workers = Workforce.recruite_workers(5)
-    time = 0
-    while to_do:
-        while Workforce.free_workers:
-            to_do.sort()
-            task = to_do[0]
-            print(task)
-            print(Workforce.assigned_workers)
-            if not task.requirements:
-                worker = Workforce.get_free_worker()
-                worker.start_task(task, time)
-                to_do.pop(0)
-                print(Workforce.assigned_workers)
-            else:
-                print(Workforce.assigned_workers)
-                time = Workforce.finish_task()
-                print(time)
-            if not to_do:
-                break
-        else:
-            while Workforce.assigned_workers:
-                time = Workforce.finish_task()
-    else:
-        while Workforce.assigned_workers:
-            time = Workforce.finish_task()
+        assert(answer2 == 1115)
 
-        print("".join(Task.done_order))
-        print("GRTAHKLQVYWXMUBCZPIJFEDNSO")
-        print(time)
+        print(f"Part II completion time with {i} workers: {answer2}")
