@@ -26,8 +26,7 @@ if __name__ == "__main__":
                 if not to_do:
                     break
             else:
-                while Workforce.assigned_workers:
-                    time = Workforce.finish_task()
+                time = Workforce.finish_task()
         else:
             while Workforce.assigned_workers:
                 time = Workforce.finish_task()
