@@ -69,13 +69,13 @@ class Task(object):
         self.effort = ord(ident) - 64 + self.base_fee
         self._requirements: set = set()
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._requirements - self.done)
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         return len(self) * 26 + self.ord < len(other) * 26 + other.ord
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "%s(%r, requirements=%r)" % (self.__class__.__name__,
                                             self.id,
                                             self._requirements - self.done)
