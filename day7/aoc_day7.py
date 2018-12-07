@@ -2,7 +2,7 @@ from string import ascii_uppercase
 from workforce import Workforce, Task
 
 
-def work(fn: str, worker_ids: str, n_workers: int=1, base_effort: int=0):
+def work(fn: str, worker_ids: str, n_workers: int=1, base_effort: int=0) -> tuple:
     with open(fn) as f:
         instructions = f.readlines()
         to_do = Task.create_tasklist(worker_ids,
