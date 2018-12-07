@@ -106,7 +106,7 @@ class Task(object):
             task_id = instruction[-13]
             requirement = instruction[5]
             task_mapping[task_id].add_requirement(requirement)
-        return task_mapping
+        return list(task_mapping.values())
 
 
 if __name__ == "__main__":

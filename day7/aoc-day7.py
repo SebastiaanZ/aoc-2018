@@ -6,10 +6,9 @@ if __name__ == "__main__":
     def work(fn: str, worker_ids: str, n_workers: int=1, base_effort: int=0):
         with open(fn) as f:
             instructions = f.readlines()
-            task_list = Task.create_tasklist(worker_ids,
-                                             instructions,
-                                             base_effort)
-            to_do = list(task_list.values())
+            to_do = Task.create_tasklist(worker_ids,
+                                         instructions,
+                                         base_effort)
 
         Workforce.recruite_workers(n_workers)
         time = 0
