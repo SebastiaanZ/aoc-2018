@@ -66,7 +66,7 @@ class Tasklist:
             requirement = instruction[5]
             self.tasks[task_id].add_requirement(requirement)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.to_do)
 
     @property
