@@ -14,17 +14,13 @@ class Workforce(object):
         self._finished: int
 
     @property
-    def free(self) -> bool:
-        return self.task is None
-
-    @property
     def finished(self):
         return self._finished
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "%s(%r)" % (self.__class__.__name__, self.id)
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         return self.finished < other.finished
 
     def start_task(self, task, time) -> None:
@@ -85,13 +81,13 @@ class Task(object):
                                             self._requirements - self.done)
 
     @property
-    def requirements(self):
+    def requirements(self) -> set:
         return self._requirements - self.done
 
-    def add_requirement(self, requirement) -> None:
+    def add_requirement(self, requirement: str) -> None:
         self._requirements.add(requirement)
 
-    def complete(self):
+    def complete(self) -> None:
         self.done.add(self.id)
         self.done_order.append(self.id)
 
@@ -114,10 +110,9 @@ if __name__ == "__main__":
 
     with open("day7-input.txt") as f:
         instructions = f.readlines()
-        task_list = Task.create_tasklist(ascii_uppercase, instructions, 60)
-        to_do = list(task_list.values())
+        to_do = Task.create_tasklist(ascii_uppercase, instructions, 60)
 
-    workers = Workforce.recruite_workers(1)
+    workers = Workforce.recruite_workers(5)
     time = 0
     while to_do:
         while Workforce.free_workers:
