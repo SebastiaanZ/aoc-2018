@@ -17,7 +17,6 @@ def play_marbles(players, last_marble):
 
 
 if __name__ == "__main__":
-    with open("day9-input.txt") as f:
-        players, last_marble = (418, 71339)
-        print(play_marbles(players, last_marble))
-        print(play_marbles(players, last_marble*100))
+    players, last_marble = (418, 71339)
+    print(play_marbles(players, last_marble))
+    print(play_marbles(players, last_marble*100))
