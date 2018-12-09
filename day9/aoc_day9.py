@@ -17,7 +17,6 @@ def play_marbles(players, last_marble):
 
 
 if __name__ == "__main__":
-    # do_test_cases_part_one("day9-test.txt")
     with open("day9-input.txt") as f:
         players, last_marble = (418, 71339)
         print(play_marbles(players, last_marble))
