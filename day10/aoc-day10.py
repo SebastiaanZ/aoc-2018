@@ -6,12 +6,24 @@
 '''
 import numpy as np
 from scipy.spatial import distance
-from scipy.optimize import minimize
+# from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 
 
 def distance_sum(t):
     return distance.pdist(coor + t * velo).sum()
+
+
+def find_minimum(t):
+    stress1 = distance_sum(t)
+    dt = 1 if distance_sum(t+1) < stress1 else -1
+
+    while True:
+        t += dt
+        stress2 = distance_sum(t)
+        if stress2 > stress1:
+            return t - dt
+        stress1 = stress2
 
 
 if __name__ == "__main__":
@@ -28,7 +40,9 @@ if __name__ == "__main__":
 
     guess = (min_mean + max_mean)//2
 
-    second = np.round(minimize(distance_sum, guess).x)
+    # second = np.round(minimize(distance_sum, guess).x)
+
+    second = find_minimum(guess)
 
     print(f"Found minimal configurations after {second} seconds")
 
