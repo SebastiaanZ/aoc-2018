@@ -1,14 +1,12 @@
-'''Approach for this puzzle is a bit different from the rest and, at the
-moment, the code does not reflect all the steps I took to solve it.
-
-My approach was:
+'''My approach was:
 - Create two numpy arrays: coordinates and velocities
 - Get an idea of the range with with min, max
-- Use a binary search to find "close" cityblock configurations
-- Plot these close configs one-by-one and watch the answer show up
+- Minimize the cityblock distance over time
+- Plot the result
 '''
 import numpy as np
-# from scipy.spatial import distance
+from scipy.spatial import distance
+from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 
 coordinates = np.zeros((2, 322))
@@ -22,22 +20,20 @@ with open("day10-input.txt") as f:
         velo[row, :] = tuple(int(n) for n in line[-8:-2].split(", "))
 
 
-print(coor.min(axis=0), coor.max(axis=0), sep="\t\t")
-print(velo.min(axis=0), velo.max(axis=0), sep="\t\t")
+def cityblock_sum(t):
+    return distance.pdist(coor + t * velo).sum()
 
 
-coor2 = coor + 10630 * velo
+min_mean = (coor.min(axis=0) // velo.min(axis=0)).mean()
+max_mean = (coor.max(axis=0) // velo.max(axis=0)).mean()
 
-# cityblocks = np.zeros(100, dtype=int)
-# minx = miny = 1000
-# maxx = maxy = 0
-for i in range(1, 15):
-    coor2 = coor2 + velo
-    # mix, miy = coor2.min(axis=0)
-    # mx, my = coor2.max(axis=0)
-    # minx, miny = min(minx, mix), min(miny, miy)
-    # maxx, maxy = max(maxx, mx), max(maxy, my)
-    print(f"Nu: {10630+i}")
-    plt.plot(coor2[:, 0], -1*coor2[:, 1], 'ro')
-    plt.show()
-    input(f"{10630+i}")
+guess = (min_mean + max_mean)//2
+
+second = np.round(minimize(cityblock_sum, guess).x)
+
+print(second)
+
+coor2 = coor + second * velo
+
+plt.plot(coor2[:, 0], -1*coor2[:, 1], 'ro')
+plt.show()
