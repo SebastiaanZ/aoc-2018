@@ -1,7 +1,7 @@
 '''My approach was:
 - Create two numpy arrays: coordinates and velocities
 - Get an idea of the range with with min, max
-- Minimize the cityblock distance over time
+- Minimize the sum of distances between points over time
 - Plot the result
 '''
 import numpy as np
@@ -10,7 +10,7 @@ from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 
 
-def cityblock_sum(t):
+def distance_sum(t):
     return distance.pdist(coor + t * velo).sum()
 
 
@@ -28,9 +28,9 @@ if __name__ == "__main__":
 
     guess = (min_mean + max_mean)//2
 
-    second = np.round(minimize(cityblock_sum, guess).x)
+    second = np.round(minimize(distance_sum, guess).x)
 
-    print(second)
+    print(f"Found minimal configurations after {second} seconds")
 
     coor2 = coor + second * velo
 
