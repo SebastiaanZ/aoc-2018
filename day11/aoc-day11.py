@@ -19,7 +19,6 @@ for (x, y) in product(range(1, 301), range(1, 301)):
     fuel -= 5
     grid[x-1, y-1] = fuel
 
-
 sums = rolling_sum(rolling_sum(grid).transpose()).transpose()
 x, y = np.unravel_index(sums.argmax(), sums.shape)
 
