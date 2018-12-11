@@ -3,16 +3,10 @@ from itertools import product
 from operator import itemgetter
 
 
-def rolling_sum_row(a, n=3):
+def rolling_sum(a, n=3):
     box = np.cumsum(a, axis=1, dtype=int)
     box[:, n:] = box[:, n:] - box[:, :-n]
     return box[:, n-1:]
-
-
-def rolling_sum_col(a, n=3):
-    box = np.cumsum(a, axis=0, dtype=int)
-    box[n:, :] = box[n:, :] - box[:-n, :]
-    return box[n-1:, :]
 
 
 serial_number = 3999
@@ -26,14 +20,14 @@ for (x, y) in product(range(1, 301), range(1, 301)):
     grid[x-1, y-1] = fuel
 
 
-sums = rolling_sum_col(rolling_sum_row(grid))
+sums = rolling_sum(rolling_sum(grid).transpose()).transpose()
 x, y = np.unravel_index(sums.argmax(), sums.shape)
 
 print(f"Answer part  I: {x+1},{y+1}")
 
 powers = []
 for i in range(1, 301):
-    sums = rolling_sum_col(rolling_sum_row(grid, n=i), n=i)
+    sums = rolling_sum(rolling_sum(grid, n=i).transpose(), n=i).transpose()
     x, y = np.unravel_index(sums.argmax(), sums.shape)
     powers.append((sums[x, y], (x+1, y+1), i))
 
