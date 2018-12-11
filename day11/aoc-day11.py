@@ -6,7 +6,7 @@ from operator import itemgetter
 def rolling_sum_row(a, n=3):
     box = np.cumsum(a, axis=1, dtype=int)
     box[:, n:] = box[:, n:] - box[:, :-n]
-    return box[:, n - 1:]
+    return box[:, n-1:]
 
 
 def rolling_sum_col(a, n=3):
@@ -20,13 +20,9 @@ grid = np.zeros((300, 300), dtype=int)
 
 for (x, y) in product(range(1, 301), range(1, 301)):
     rack_id = x + 10
-
     fuel = str((y*rack_id + serial_number) * rack_id)
-
     fuel = int(fuel[-3]) if len(fuel) >= 3 else 0
-
     fuel -= 5
-
     grid[x-1, y-1] = fuel
 
 
@@ -46,4 +42,3 @@ x, y = maximum[1]
 size = maximum[2]
 
 print(f"Answer part II: {x},{y},{size}")
-
