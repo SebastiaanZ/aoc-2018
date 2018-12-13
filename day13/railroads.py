@@ -77,10 +77,11 @@ class Track:
                     self._trains.append(train)
 
     def update_position(self, previous: tuple, current: tuple, train: Train):
-        try:
-            self._positions.remove(previous)
-        except KeyError:
-            pass
+        if train in self._collisions:
+            return None
+
+        self._positions.remove(previous)
+
         if current in self._positions:
             self._positions.remove(current)
 
@@ -125,7 +126,6 @@ class Track:
         y, x = self._trains[0].location
         print(f"Last train at {x},{y}")
         print("="*27)
-
 
 
 if __name__ == "__main__":
