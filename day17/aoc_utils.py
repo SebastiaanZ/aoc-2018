@@ -8,7 +8,7 @@ Location = namedtuple("Location", ["left", "right"])
 
 
 def create_array(fn):
-
+    """Creates the initial ground map, returns the first cursor and y_min"""
     axis = {"x": None, "y": None}
     x_min = y_min = np.inf
     x_max = y_max = -np.inf
@@ -38,6 +38,7 @@ def create_array(fn):
 
 
 def waterfall(cursor, ground):
+    """Creates a waterfalll to next layer of clay or to 'infinity and beyond'"""
     water_startpoint = cursor.row + 1
     find_endpoint = np.isin(ground[water_startpoint:, cursor.col], ["#", "~", "|"])
     endpoint = np.where(find_endpoint)[0]
@@ -57,6 +58,7 @@ def waterfall(cursor, ground):
 
 
 def spread_water(cursor, ground):
+    """Once we hit clay, spread water and fill rows until we overflow"""
     done = False
     while not done:
         cursor, done = fill_water(cursor, ground)
@@ -64,6 +66,7 @@ def spread_water(cursor, ground):
 
 
 def check_boundaries(cursor, ground):
+    """Check if there are clay boundaries to the left and right"""
     clay_left = np.where(ground[cursor.row, :cursor.col] == "#")[0]
     clay_right = np.where(ground[cursor.row, cursor.col:] == "#")[0]
 
@@ -81,6 +84,7 @@ def check_boundaries(cursor, ground):
 
 
 def check_bottom(cursor, ground, boundary):
+    """Checks if the bottom is continuous between the boundaries"""
     left_bottom = np.isin(ground[cursor.row + 1, boundary.left:cursor.col], ["#", "~"])
     right_bottom = np.isin(ground[cursor.row + 1, cursor.col:(boundary.right+1)], ["#", "~"])
 
@@ -97,6 +101,7 @@ def check_bottom(cursor, ground, boundary):
 
 
 def fill_water(cursor, ground):
+    """Fills a row using the boundaries and bottom checks"""
     boundary = check_boundaries(cursor, ground)
     enclosed, gap = check_bottom(cursor, ground, boundary)
 
@@ -112,5 +117,3 @@ def fill_water(cursor, ground):
     else:
         ground[cursor.row, gap.left:gap.right+1] = "|"
         return (Cursor(cursor.row, gap.left), Cursor(cursor.row, gap.right)), True
-
-    raise Exception("This shouldn't happen!")
