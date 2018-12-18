@@ -34,8 +34,8 @@ def part_one(temp):
     rows = len(temp)
 
     # Create empty ndarrays
-    land = np.zeros((cols+2, rows+2))
-    state = np.zeros((cols+2, rows+2))
+    land = np.zeros((cols+2, rows+2), dtype=int)
+    state = np.zeros((cols+2, rows+2), dtype=int)
 
     # Initial configuration
     land[1:-1, 1:-1] = temp
@@ -53,8 +53,8 @@ def part_two(temp, max_iter=10_000):
     rows = len(temp)
 
     # Create empty ndarrays
-    land = np.zeros((cols+2, rows+2))
-    state = np.zeros((cols+2, rows+2))
+    land = np.zeros((cols+2, rows+2), dtype=int)
+    state = np.zeros((cols+2, rows+2), dtype=int)
 
     # Initial configuration
     land[1:-1, 1:-1] = temp
