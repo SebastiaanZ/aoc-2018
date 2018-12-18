@@ -12,21 +12,22 @@ def square_sum(a, n=3):
     return m
 
 
-def next_minute(land, state):
-    s = state - land
-    if land == 0 and (s % 100) >= 30:
-        return 10
-    elif land == 10 and s >= 300:
-        return 100
-    elif land == 100:
-        if s >= 100 and (s % 100) >= 10:
-            return 100
-        else:
-            return 0
+def next_minute2(land, state):
+    state_c = state - land
+    state100 = state_c % 100
+
+    empty = land == 0
+    trees = land == 10
+    lumber = land == 100
+
+    land[np.logical_and(empty, state100 >= 30)] = 10
+    land[np.logical_and(trees, state_c >= 300)] = 100
+
+    lumber_friendly = np.logical_and(state_c >= 100, state100 >= 10)
+    land[np.logical_and(lumber, lumber_friendly)] = 100
+    land[np.logical_and(lumber, np.logical_not(lumber_friendly))] = 0
     return land
 
-
-vnext_minute = np.vectorize(next_minute)
 
 def part_one(temp):
     cols = len(temp[0])
@@ -41,7 +42,7 @@ def part_one(temp):
 
     for _ in range(10):
         state[1:-1, 1:-1] = square_sum(land)
-        land = vnext_minute(land, state)
+        land = next_minute2(land, state)
 
     value = (land == 10).sum() * (land == 100).sum()
     print(f"Answer: {value}")
@@ -65,11 +66,10 @@ def part_two(temp, max_iter=10_000):
     count = 0
     last_period = -1
 
-    # Compute initial value
     pattern = False
     for i in range(iterations):
         state[1:-1, 1:-1] = square_sum(land)
-        land = vnext_minute(land, state)
+        land = next_minute2(land, state)
         value = (land == 10).sum() * (land == 100).sum()
         answers[i] = value
 
