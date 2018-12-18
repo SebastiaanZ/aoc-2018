@@ -16,7 +16,7 @@ def next_minute2(land, state):
     state_c = state - land
     state100 = state_c % 100
 
-    empty = land == 0
+    empty = land == 1
     trees = land == 10
     lumber = land == 100
 
@@ -25,7 +25,7 @@ def next_minute2(land, state):
 
     lumber_friendly = np.logical_and(state_c >= 100, state100 >= 10)
     land[np.logical_and(lumber, lumber_friendly)] = 100
-    land[np.logical_and(lumber, np.logical_not(lumber_friendly))] = 0
+    land[np.logical_and(lumber, np.logical_not(lumber_friendly))] = 1
     return land
 
 
@@ -100,7 +100,7 @@ def part_two(temp, max_iter=10_000):
 
 
 if __name__ == "__main__":
-    m = {".": 0, "|": 10, "#": 100}
+    m = {".": 1, "|": 10, "#": 100}
 
     with open("day18-input.txt") as f:
         temp = [[m[c] for c in row.strip()] for row in f]
