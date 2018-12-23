@@ -52,9 +52,9 @@ while True:
     # Once we've found the candidate box, continue searching it with a binary search
     span = int(np.ceil(span / 2))
     x, y, z = candidate[0][0]
-    x_min, x_max = x - span, x + span
-    y_min, y_max = y - span, y + span
-    z_min, z_max = z - span, z + span
+    x_min, x_max = x - span, x + span + 1
+    y_min, y_max = y - span, y + span + 1
+    z_min, z_max = z - span, z + span + 1
 
 
 print(f"Answer part II: {-candidate[1][1]}")
