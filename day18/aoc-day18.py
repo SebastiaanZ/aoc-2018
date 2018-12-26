@@ -61,8 +61,7 @@ def part_two(temp, max_iter=10_000):
 
     # Set up the iterations
     iterations = max_iter
-    answers = [0] * iterations
-    hashes = [0] * iterations
+    answers = np.zeros(iterations, dtype=int)
     seen = set()
 
     for i in range(iterations):
@@ -72,12 +71,11 @@ def part_two(temp, max_iter=10_000):
 
         config_hash = hash(land.tostring())
         if config_hash in seen:
-            found_at = hashes.index(config_hash)
+            found_at = int(np.argwhere(answers == value))
             length = i - found_at
             break
         else:
             answers[i] = value
-            hashes[i] = config_hash
             seen.add(config_hash)
 
     answer_at_index = found_at + (1_000_000_000 - found_at) % length - 1
