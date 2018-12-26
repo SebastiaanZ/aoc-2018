@@ -62,38 +62,23 @@ def part_two(temp, max_iter=10_000):
     # Set up the iterations
     iterations = max_iter
     answers = [0] * iterations
+    hashes = [0] * iterations
     seen = set()
-    count = 0
-    last_period = -1
 
-    pattern = False
     for i in range(iterations):
         state[1:-1, 1:-1] = square_sum(land)
         land = next_minute2(land, state)
         value = (land == 10).sum() * (land == 100).sum()
-        answers[i] = value
 
-        if value in seen:
-            if pattern:
-                new_period = answers[(i-1)::-1].index(value) + 1
-                if new_period == last_period:
-                    count += 1
-                    if count == last_period:
-                        found_at = i-last_period+1
-                        length = last_period
-                        print(f"* Found repeating pattern at {found_at}")
-                        print(f"* Pattern length = {length}")
-                        break
-                else:
-                    count = 1
-                    last_period = new_period
-            else:
-                last_period = answers[(i-1)::-1].index(value) + 1
-                count = 1
-                pattern = True
+        config_hash = hash(land.tostring())
+        if config_hash in seen:
+            found_at = hashes.index(config_hash)
+            length = i - found_at
+            break
         else:
-            pattern = False
-            seen.add(value)
+            answers[i] = value
+            hashes[i] = config_hash
+            seen.add(config_hash)
 
     answer_at_index = found_at + (1_000_000_000 - found_at) % length - 1
     print(f"Answer: {answers[answer_at_index]}")
