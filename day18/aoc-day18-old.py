@@ -1,29 +1,26 @@
 import numpy as np
 
 
-def rolling_sum(a, n=3):
+def neightbor_sum(a):
+    """For each cell, compute the sum of the eight neighbors"""
     box = np.cumsum(a, axis=1, dtype=int)
-    box[:, n:] = box[:, n:] - box[:, :-n]
-    return box[:, n-1:]
+    box[:, 3:] = box[:, 3:] - box[:, :-3]
+    box = np.cumsum(box, axis=0, dtype=int)
+    box[3:, :] = box[3:, :] - box[:-3, :]
+    return box[2:, 2:] - a[1:-1, 1:-1]
 
 
-def square_sum(a, n=3):
-    m = rolling_sum(rolling_sum(a, n).transpose(), n).transpose()
-    return m
-
-
-def next_minute2(land, state):
-    state_c = state - land
-    state100 = state_c % 100
+def advance_minute(land, state):
+    state100 = state % 100
 
     empty = land == 1
     trees = land == 10
     lumber = land == 100
 
     land[np.logical_and(empty, state100 >= 30)] = 10
-    land[np.logical_and(trees, state_c >= 300)] = 100
+    land[np.logical_and(trees, state >= 300)] = 100
 
-    lumber_friendly = np.logical_and(state_c >= 100, state100 >= 10)
+    lumber_friendly = np.logical_and(state >= 100, state100 >= 10)
     land[np.logical_and(lumber, lumber_friendly)] = 100
     land[np.logical_and(lumber, np.logical_not(lumber_friendly))] = 1
     return land
@@ -41,8 +38,8 @@ def part_one(temp):
     land[1:-1, 1:-1] = temp
 
     for _ in range(10):
-        state[1:-1, 1:-1] = square_sum(land)
-        land = next_minute2(land, state)
+        state[1:-1, 1:-1] = neightbor_sum(land)
+        land = advance_minute(land, state)
 
     value = (land == 10).sum() * (land == 100).sum()
     print(f"Answer: {value}")
@@ -61,39 +58,22 @@ def part_two(temp, max_iter=10_000):
 
     # Set up the iterations
     iterations = max_iter
-    answers = [0] * iterations
+    answers = [0]*iterations
     seen = set()
-    count = 0
-    last_period = -1
 
-    pattern = False
     for i in range(iterations):
-        state[1:-1, 1:-1] = square_sum(land)
-        land = next_minute2(land, state)
+        state[1:-1, 1:-1] = neightbor_sum(land)
+        land = advance_minute(land, state)
         value = (land == 10).sum() * (land == 100).sum()
-        answers[i] = value
 
-        if value in seen:
-            if pattern:
-                new_period = answers[(i-1)::-1].index(value) + 1
-                if new_period == last_period:
-                    count += 1
-                    if count == last_period:
-                        found_at = i-last_period+1
-                        length = last_period
-                        print(f"* Found repeating pattern at {found_at}")
-                        print(f"* Pattern length = {length}")
-                        break
-                else:
-                    count = 1
-                    last_period = new_period
-            else:
-                last_period = answers[(i-1)::-1].index(value) + 1
-                count = 1
-                pattern = True
+        land_hash = hash(land.tostring())
+        if land_hash in seen:
+            found_at = answers.index(value)
+            length = i - found_at
+            break
         else:
-            pattern = False
-            seen.add(value)
+            answers[i] = value
+            seen.add(land_hash)
 
     answer_at_index = found_at + (1_000_000_000 - found_at) % length - 1
     print(f"Answer: {answers[answer_at_index]}")
